@@ -1,0 +1,37 @@
+---
+title: "hw01_gapminder_slide"
+author: Xuan Lin
+output: 
+  ioslides_presentation:
+    keep_md: true
+---
+
+## Introduction
+This is a short summary of _gapminder_. The dataset contains data of life expetancy, population and GDP per capita from year 1952 to 2007 in increments of 5 years. In the slides, the average life expetancy of year 1952 and 2007, as well as total population of year 1952 and 2007 are shown.
+
+```{r warning=FALSE, echo=FALSE}
+library(gapminder)
+library(DT)
+```
+
+## World average life expetancy of year 1952 and 2007
+
+```{r echo=FALSE}
+lifeExp_1952 <- subset(gapminder, year == "1952")
+cat("Year 1952:", mean (lifeExp_1952$lifeExp), "yr")
+
+lifeExp_2007 <- subset(gapminder, year == "2007")
+cat("Year 2007:", mean (lifeExp_2007$lifeExp), "yr")
+
+```
+
+## World total population of year 1952 and 2007
+
+```{r echo=FALSE}
+pop_1952 <- subset(gapminder, year == "1952")
+cat("Year 1952:", "US$", sum (pop_1952$pop))
+
+pop_2007 <- subset(gapminder, year == "2007")
+cat("Year 2007:", "US$", sum (pop_2007$pop))
+
+```
