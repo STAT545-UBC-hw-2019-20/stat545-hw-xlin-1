@@ -1,0 +1,65 @@
+---
+title: "hw2.0-Gapminder and dplyr"
+author: "Xuan Lin"
+date: '2019-09-21'
+output: 
+  html_document:
+    keep_md: true
+---
+
+## Setup
+```{r echo=FALSE, warning=FALSE}
+library(gapminder)
+library(tidyverse)
+```
+
+## _Exercise 1_ Basic dplyr
+__1.1__
+```{r echo=FALSE}
+filter(gapminder, year== 1972 | year== 1977, country== "China" | country=="Canada" | country=="Japan") %>% 
+data.table::data.table()
+```
+
+__1.2__
+```{r echo=FALSE}
+filter(gapminder, year== 1972 | year== 1977, country== "China" | country=="Canada" | country=="Japan") %>% 
+  select(country, gdpPercap) %>% 
+  data.table::data.table()
+```
+
+__1.3__
+```{r echo=FALSE}
+gapminder %>% 
+  group_by(country) %>% 
+  mutate(increaseInlifeExp = c(0, diff(lifeExp, 1))) %>% 
+  filter(increaseInlifeExp < 0) %>% 
+  data.table::data.table()
+```
+
+
+__1.4__
+```{r echo=FALSE}
+gapminder %>% 
+  group_by(country) %>% 
+  filter(gdpPercap == max(gdpPercap)) %>% 
+  data.table::data.table()
+```
+
+__1.5__
+
+
+```{r echo=FALSE}
+gapminder %>%
+  filter(country == "Canada") %>% 
+  ggplot(aes(lifeExp, gdpPercap)) +
+  geom_point() +
+  scale_y_log10("GDP per capita", labels = scales::dollar_format()) +
+  xlab("Life Expectancy")
+```
+
+
+
+
+
+
+
