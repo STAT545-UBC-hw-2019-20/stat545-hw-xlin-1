@@ -17,14 +17,14 @@ library(tidyverse)
 __1.1__
 ```{r echo=FALSE}
 filter(gapminder, year== 1972 | year== 1977, country== "China" | country=="Canada" | country=="Japan") %>% 
-data.table::data.table()
+knitr::kable()
 ```
 
 __1.2__
 ```{r echo=FALSE}
 filter(gapminder, year== 1972 | year== 1977, country== "China" | country=="Canada" | country=="Japan") %>% 
   select(country, gdpPercap) %>% 
-  data.table::data.table()
+  knitr::kable()
 ```
 
 __1.3__
@@ -33,7 +33,7 @@ gapminder %>%
   group_by(country) %>% 
   mutate(increaseInlifeExp = c(0, diff(lifeExp, 1))) %>% 
   filter(increaseInlifeExp < 0) %>% 
-  data.table::data.table()
+  DT::datatable()
 ```
 
 
@@ -42,7 +42,7 @@ __1.4__
 gapminder %>% 
   group_by(country) %>% 
   filter(gdpPercap == max(gdpPercap)) %>% 
-  data.table::data.table()
+  DT::datatable()
 ```
 
 __1.5__
@@ -57,6 +57,7 @@ gapminder %>%
   xlab("Life Expectancy")
 ```
 
+## _Exercise 2_ Explore individual variables with dplyr
 
 
 
