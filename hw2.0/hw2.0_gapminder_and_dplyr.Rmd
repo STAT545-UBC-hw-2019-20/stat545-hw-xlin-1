@@ -5,6 +5,7 @@ date: '2019-09-21'
 output: 
   html_document:
     keep_md: true
+    toc: true
 ---
 
 ## Setup
@@ -14,20 +15,20 @@ library(tidyverse)
 ```
 
 ## _Exercise 1_ Basic dplyr
-__1.1__
+### __1.1__
 ```{r echo=FALSE}
 filter(gapminder, year== 1972 | year== 1977, country== "China" | country=="Canada" | country=="Japan") %>% 
 knitr::kable()
 ```
 
-__1.2__
+### __1.2__
 ```{r echo=FALSE}
 filter(gapminder, year== 1972 | year== 1977, country== "China" | country=="Canada" | country=="Japan") %>% 
   select(country, gdpPercap) %>% 
   knitr::kable()
 ```
 
-__1.3__
+### __1.3__
 ```{r echo=FALSE}
 gapminder %>% 
   group_by(country) %>% 
@@ -37,7 +38,7 @@ gapminder %>%
 ```
 
 
-__1.4__
+### __1.4__
 ```{r echo=FALSE}
 gapminder %>% 
   group_by(country) %>% 
@@ -45,7 +46,7 @@ gapminder %>%
   DT::datatable()
 ```
 
-__1.5__
+### __1.5__
 
 
 ```{r echo=FALSE}
@@ -58,9 +59,37 @@ gapminder %>%
 ```
 
 ## _Exercise 2_ Explore individual variables with dplyr
+__Minimum and maximum life expetancy each year:__
+
+```{r echo=FALSE}
+gapminder %>%
+  group_by(year) %>% 
+  filter(lifeExp == max(lifeExp) | lifeExp == min(lifeExp)) %>% 
+  select(year, lifeExp) %>% 
+  arrange(year, lifeExp) %>% 
+  knitr::kable()
+```
+
+__Boxplot of life expectancy each year:__
+
+```{r echo=FALSE}
+gapminder %>%
+  ggplot(aes(year, lifeExp)) +
+  geom_boxplot(aes(group = year)) +
+  xlab("Year") +
+  ylab("Life Expectancy")
+```
 
 
+## _Exercise 3_ Explore various plot types
+### A scatterplot of two quantitative variables
 
+### One other plot besides a scatterplot
 
+## _Recycling_
+The given code retures the data for Rwanda and Afghanistan.
+```{r}
+filter(gapminder, country == c("Rwanda", "Afghanistan"))
+```
 
 
