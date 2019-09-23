@@ -15,30 +15,47 @@ library(tidyverse)
 ```
 
 ## _Exercise 1_ Basic dplyr
-### __1.1__
+### 1.1
+
+
+__Table 1.1 Life expectancy, population and GDP in Canada, China and Japan (1970's)__
+
 ```{r echo=FALSE}
 filter(gapminder, year== 1972 | year== 1977, country== "China" | country=="Canada" | country=="Japan") %>% 
 knitr::kable()
 ```
 
-### __1.2__
+
+
+### 1.2
+
+__Table 1.2 GDP in Canada, China and Japan (1970's)__
+
+
 ```{r echo=FALSE}
 filter(gapminder, year== 1972 | year== 1977, country== "China" | country=="Canada" | country=="Japan") %>% 
   select(country, gdpPercap) %>% 
   knitr::kable()
 ```
 
-### __1.3__
+
+### 1.3
+
+__Table 1.3 Countries experienced a drop in life expectancy (1952-2007)__
+
 ```{r echo=FALSE}
 gapminder %>% 
   group_by(country) %>% 
-  mutate(increaseInlifeExp = c(0, diff(lifeExp, 1))) %>% 
+  mutate(increaseInlifeExp = c(0, round(diff(lifeExp, 1), digits = 1))) %>% 
   filter(increaseInlifeExp < 0) %>% 
   DT::datatable()
 ```
 
 
-### __1.4__
+### 1.4
+
+__Table 1.4 Maximum GDP experienced by each country (1952-2007)__
+
 ```{r echo=FALSE}
 gapminder %>% 
   group_by(country) %>% 
@@ -46,7 +63,8 @@ gapminder %>%
   DT::datatable()
 ```
 
-### __1.5__
+
+### 1.5
 
 
 ```{r echo=FALSE}
@@ -58,8 +76,11 @@ gapminder %>%
   xlab("Life Expectancy")
 ```
 
+__Fig 1.1 Relationship between life expectancy and GDP in Canada (1952-2007)__
+
 ## _Exercise 2_ Explore individual variables with dplyr
-__Minimum and maximum life expetancy each year:__
+
+__Table 2.1 Minimum and maximum life expetancy each year__
 
 ```{r echo=FALSE}
 gapminder %>%
@@ -70,7 +91,8 @@ gapminder %>%
   knitr::kable()
 ```
 
-__Boxplot of life expectancy each year:__
+
+
 
 ```{r echo=FALSE}
 gapminder %>%
@@ -80,16 +102,37 @@ gapminder %>%
   ylab("Life Expectancy")
 ```
 
+__Fig 2.1 Boxplot of life expectancy each year (1952-2007)__
 
 ## _Exercise 3_ Explore various plot types
-### A scatterplot of two quantitative variables
+### Scatterplot
 
-### One other plot besides a scatterplot
 
-## _Recycling_
-The given code retures the data for Rwanda and Afghanistan.
-```{r}
-filter(gapminder, country == c("Rwanda", "Afghanistan"))
+```{r echo=FALSE}
+gapminder %>%
+  filter(country == "China") %>% 
+  ggplot(aes(pop, gdpPercap)) +
+  geom_point(color = "black", fill = "Navy", shape = 22, alpha = 0.5, size = 6) +
+  scale_x_continuous ("Population", labels = scales::scientific_format(digits = 2, scale = 1)) +
+  scale_y_continuous ("GDP per capita", labels = scales::dollar_format())
 ```
 
 
+__Fig 3.1 Relationship between Chinese population and GDP per capita (1952 - 2007)__
+
+
+### Boxplot
+
+```{r echo=FALSE}
+gapminder %>%
+  filter(year == 2007) %>% 
+  mutate(popB = round(log10(pop), digit=0)) %>% 
+  group_by(popB) %>% 
+  ggplot(aes(popB, gdpPercap)) +
+  geom_boxplot(aes(group=popB)) +
+  scale_x_continuous("Population", labels = scales::math_format(expr = 10^.x)) +
+  scale_y_log10 ("GDP per capita", labels = scales::dollar_format())
+```
+
+
+__Fig 3.2 Difference in GDP per capita with different range of population (2007)__
