@@ -1,0 +1,85 @@
+---
+title: "hw3.0_dplyr_and_ggplot2"
+author: "Xuan Lin"
+date: '2019-09-29'
+output: 
+  html_document:
+    keep_md: true
+    toc: true
+---
+
+```{r echo=FALSE, warning=FALSE}
+library(gapminder)
+library(tidyverse)
+```
+
+## 1. Task Option 2
+Table 1 shows the maximum and minimum GDP per capita in period of 1952 to 2007 for all continents. Fig. 1 shows the maximum GDP per capita reported in period of 1952 to 2007 for all continents, Asia was reportd to create the highest GDP per capita in this period.
+
+__Table 1 Maximun and minimun GDP per capita for all continents (1952-2007)__
+
+```{r echo=FALSE, fig.height=3, fig.width=4}
+gapminder %>% 
+  group_by(continent) %>% 
+  summarize(Maximum_GDP = max(gdpPercap),
+            Minimum_GDP = min(gdpPercap)) %>% 
+  knitr::kable()
+
+gapminder %>% 
+  group_by(continent) %>% 
+  summarize(Maximum_GDP = max(gdpPercap),
+            Minimum_GDP = min(gdpPercap)) %>% 
+  ggplot(aes(continent, Maximum_GDP)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  scale_x_discrete("Continent") +
+  theme_classic()
+```
+
+__Fig. 1 Maximum GDP per Capita for all continents (1952-2007)__
+
+## 2. Task Option 3
+Table 2 shows the spread of GDP per capita within the continents for period of 1952 to 2007. Largest variance was observed in Asia. The same observation can also be concluded from the boxplot of GDP per capita within the continents from 1952 to 2007 (Fig. 2), with the most outliers observed in Asia.
+
+__Table 2 Spread of GDP per capita within the continents (1952-2007)__
+
+```{r echo=FALSE, fig.height=3, fig.width=4}
+gapminder %>% 
+  group_by(continent) %>% 
+  summarize (Range = max(gdpPercap)- min(gdpPercap),
+             Variance = var(gdpPercap),
+             Standard_Deviation = sd(gdpPercap),
+             Inner_Quartile_Range= IQR(gdpPercap)) %>% 
+  knitr::kable() 
+
+  ggplot(gapminder, aes(continent, gdpPercap)) +
+  geom_boxplot() +
+  scale_y_continuous("GDP per capita", labels = scales::dollar_format()) +
+  scale_x_discrete("Continent") +
+  theme_classic()
+```
+
+__Fig. 2 Boxplot of GDP per capita within the continents (1952-2007)__
+
+## 3. Task Option 4
+A 10% trimmed mean was calculated for each statistical year from year 1952 to 2007, and the results were shown in Table 3 and Fig. 3. A continuous increase in average life expectancy was observed from 1952 to 2007.
+
+__Table 3 Trimmed mean of life expectancy for year 1952 to 2007__
+```{r echo=FALSE, fig.height=3, fig.width=4}
+gapminder %>% 
+  group_by(year) %>% 
+  summarize(trimmed_mean = mean(lifeExp, trim = 0.1)) %>% 
+  knitr::kable()
+
+gapminder %>% 
+  group_by(year) %>% 
+  summarize(trimmed_mean = mean(lifeExp, trim = 0.1)) %>% 
+  ggplot(aes(year,trimmed_mean)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous("Life Expectance") +
+  theme_classic()
+```
+
+__Fig. 3 Change in life expactancy (1952-2007), each data point represents the trimmed mean for each year__
+
