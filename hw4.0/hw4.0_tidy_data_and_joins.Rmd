@@ -1,0 +1,56 @@
+---
+title: "hw4.0_tidy_data_and_joins"
+author: "Xuan Lin"
+date: '2019-10-07'
+output: 
+  html_document:
+    keep_md: true
+    toc: true
+---
+
+```{r echo=FALSE, warning=FALSE}
+library(gapminder)
+library(tidyverse)
+```
+
+## Exercise 1: Univariate Data Reshaping (Option 1)
+
+__Table 1 Life expectancy in Asia (wide format)__
+
+```{r echo=FALSE, warning=FALSE}
+gapminder %>% 
+  filter(continent == "Asia") %>% 
+  pivot_wider(id_cols = year, names_from = country, values_from = lifeExp) %>% 
+  DT::datatable()
+```
+
+```{r echo=FALSE, warning=FALSE}
+gapminder %>% 
+  filter(continent == "Asia") %>% 
+  pivot_wider(id_cols = year, names_from = country, values_from = lifeExp) %>% 
+  ggplot(aes(x=year)) +
+  geom_line(aes(y= China, color = "red")) +
+  geom_line(aes(y= Japan, color= "blue")) +
+  scale_y_continuous("Life Expectancy") +
+  scale_color_discrete("Country", labels = c("Japan", "China")) +
+  scale_x_continuous("Year") +
+  theme_classic()
+```
+
+__Fig.1 Life expectancy in China and Japan (1952-2007)__
+
+
+__Table 2 Life expectancy in Asia (original)__
+
+```{r echo=FALSE, warning=FALSE}
+gapminder %>% 
+  filter(continent == "Asia") %>% 
+  pivot_wider(id_cols = year, names_from = country, values_from = lifeExp) %>% 
+  pivot_longer(cols = -year, names_to = "country", values_to = "lifeExp") %>% 
+  DT::datatable()
+```
+
+## Exercise 2: Multivariate Data Reshaping (Option 1)
+
+
+
