@@ -8,23 +8,35 @@ output:
     toc: true
 ---
 
-```{r echo=FALSE, warning=FALSE}
+```{r warning=FALSE}
 library(gapminder)
 library(tidyverse)
 ```
 
 ## Exercise 1: Univariate Data Reshaping (Option 1)
 
-__Table 1 Life expectancy in Asia (wide format)__
+### _1.1_
 
-```{r echo=FALSE, warning=FALSE}
+__Description__
+
+We are interested in the life exectancies in Asian countries from year 1952 to 2007. The original _gapminder_ dataset presents each year and contry in seperate rows which makes comparison of life expectancy of different countries in the same year somehow difficult. The following table filtered out Asian countries and re-organized the columns so that direct comparison of life expectancy in the same year can be easily achieved.
+
+```{r warning=FALSE}
 gapminder %>% 
   filter(continent == "Asia") %>% 
   pivot_wider(id_cols = year, names_from = country, values_from = lifeExp) %>% 
   DT::datatable()
 ```
 
-```{r echo=FALSE, warning=FALSE}
+__Table 1 Life expectancy in Asia (wide format)__
+
+### _1.2_
+
+__Description__
+
+We then compare life expectancy in China and Japan by plotting them together. The red and blue lines show life expectancy in China and Japan, respectively.
+
+```{r warning=FALSE}
 gapminder %>% 
   filter(continent == "Asia") %>% 
   pivot_wider(id_cols = year, names_from = country, values_from = lifeExp) %>% 
@@ -39,10 +51,13 @@ gapminder %>%
 
 __Fig.1 Life expectancy in China and Japan (1952-2007)__
 
+### _1.3_
 
-__Table 2 Life expectancy in Asia (original)__
+__Description__
 
-```{r echo=FALSE, warning=FALSE}
+We finally re-organize the wide table made in the first step back to the original format.
+
+```{r warning=FALSE}
 gapminder %>% 
   filter(continent == "Asia") %>% 
   pivot_wider(id_cols = year, names_from = country, values_from = lifeExp) %>% 
@@ -50,7 +65,55 @@ gapminder %>%
   DT::datatable()
 ```
 
+__Table 2 Life expectancy in Asia (original)__
+
 ## Exercise 2: Multivariate Data Reshaping (Option 1)
 
+### _2.1_
 
+__Description__
 
+Except life expectancy, we are also interested in GDP per capita in Asian countries. Therefore, we make the following wide table of life expectancy and GDP per capita in Asian counties from 1952 to 2007.
+
+```{r warning=FALSE}
+gapminder %>% 
+  filter(continent == "Asia") %>%
+  pivot_wider(id_cols = year, 
+              names_from = country,
+              names_sep = "_",
+              values_from = c(lifeExp, gdpPercap)) %>% 
+  DT::datatable()
+```
+
+__Table 3 Life expectancy and GDP per capita in Asian countries (wide format)__
+
+### 2.2
+
+__Description__
+
+The wide-formatted table is then reshaped to its original format. To do this, we first convert the wide formatted table to a longer table having the combination of each year and life expectancy / GDP per capita for all countries as a single row, then reshape it to the longest table having the combination of each year, life expectancy/ GDP per capita and country as a sigle row, finally widen the longest table to the original format.
+
+```{r warning=FALSE}
+gapminder %>% 
+  filter(continent == "Asia") %>%
+  pivot_wider(id_cols = year, 
+              names_from = country,
+              names_sep = "_",
+              values_from = c(lifeExp, gdpPercap)) %>% 
+  pivot_longer(cols = -year,
+               names_to = c("index",".value"),
+               names_sep = "_") %>% 
+  pivot_longer(cols = -c(year,index), names_to = "country", values_to = "measurements") %>% 
+  pivot_wider(id_cols = c(year, country), names_from = index, values_from = "measurements") %>% 
+  DT::datatable()
+```
+
+__Table 4 Life expectancy and GDP per capita in Asian countries (original format)__
+
+## Exercise 3: Table Joins
+```{r}
+guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
+email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
+```
+
+### _3.1_
