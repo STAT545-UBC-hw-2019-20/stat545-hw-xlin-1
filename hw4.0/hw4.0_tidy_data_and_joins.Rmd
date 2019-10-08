@@ -111,9 +111,50 @@ gapminder %>%
 __Table 4 Life expectancy and GDP per capita in Asian countries (original format)__
 
 ## Exercise 3: Table Joins
-```{r}
+```{r warning=FALSE}
 guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
 email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
 ```
 
 ### _3.1_
+
+__Descrpition__
+
+For each guest in the _guestlist_ (guest tibble), add a column for email address, which can be found in the _email_ tibble. 
+
+We first separate the names in the original _email_ tibble and save it as a new tibble **email_address**, then using *left_join* to add the email address to the guest list.
+
+```{r warning=FALSE}
+email_address <- email %>% 
+  separate_rows(guest, sep = ", ") %>% 
+  rename(name = guest)
+
+guest %>% 
+  left_join(email_address, by = "name") %>% 
+  knitr::kable()
+
+```
+
+### _3.2_
+
+__Descrpition__
+
+Who do we have emails for, yet are not on the guestlist?
+
+```{r warning=FALSE}
+anti_join(email_address, guest) %>% 
+  knitr::kable()
+```
+
+
+### _3.3_
+
+__Descrpition__
+
+Make a guestlist that includes everyone we have emails for (in addition to those on the original guestlist).
+
+```{r warning=FALSE}
+full_join(guest, email_address) %>% 
+  knitr::kable()
+```
+
