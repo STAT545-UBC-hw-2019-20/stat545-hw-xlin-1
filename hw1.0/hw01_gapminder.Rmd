@@ -1,9 +1,10 @@
 ---
 title: "hw01_gapminder"
-author: Xuan Lin
-output: 
+author: "Xuan Lin"
+output:
+  pdf_document: default
   html_document:
-    keep_md: true
+    keep_md: yes
 ---
 
 ### Introduction
