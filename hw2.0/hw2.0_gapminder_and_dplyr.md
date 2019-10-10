@@ -1,12 +1,8 @@
----
-title: "hw2.0-Gapminder and dplyr"
-author: "Xuan Lin"
-date: '2019-09-21'
-output: 
-  html_document:
-    keep_md: true
-    toc: true
----
+
+# hw2.0-Gapminder and dplyr
+## author: "Xuan Lin"
+## date: '2019-09-21'
+
 
 ## Setup
 
