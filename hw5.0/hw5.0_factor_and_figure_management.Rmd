@@ -1,0 +1,170 @@
+---
+title: "hw5.0_factor_and_figure_management"
+author: "Xuan Lin"
+date: '2019-10-16'
+output: 
+  html_document:
+    toc: true
+---
+
+## Load packages
+```{r message=FALSE}
+library(gapminder)
+library(tidyverse)
+library(dplyr)
+library(forcats)
+library(ggplot2)
+library(here)
+library(cowplot)
+```
+
+## Exercise 1 Summary
+
+Although setting up a working directory was considered one of the first actions when started working on a R project, it can be problematic when considering the reproducibility of your work, for the reason that the the working directory usually relates to an unique path on your own computer. Here package solves this question by offering the function of finding the root directory of your project and setting up sub-directories for your files in a platform-independent way. 
+
+Here package also has advantages over the relative path one may use when handling with R projects. Firstly it's platform-independent, meaning that the code for windows and MAC systems stays the same; Secondly, it's project independent, indicating that one can still access the data without opening the R project; Thirdly, it works with both Rmarkdown and .R files, which is not the case for relative path; Finally, moving files with here functions avoids changing the relative directory, which potentially reduces the work and makes the code more robust.
+
+In conclusion, applying here package within R project is a simple, easy and highly reproducible way of coding.
+
+## Exercise 2 Factor Management
+
+### Drop Oceania
+
+Before we filter out Oceania, we first check if variable _continent_ is a factor. If it is, how many levels are in this factor and what are they? Also, how many rows in this dataset associated with each continent?
+```{r}
+class(gapminder$continent)
+nlevels(gapminder$continent)
+levels(gapminder$continent)
+count(gapminder, continent)
+```
+It shows that _continent_ is a factor with levels of 5, which are "Africa", "Americas", "Asia", "Europe" and "Oceania", and there're 624, 300, 396, 360 and 24 observations associated with each level, respectively.
+
+Then we remove all the observations associated with Oceania and drop the unused level. After dropping Oceania, the levels and observations associated were checked again.
+
+```{r}
+#Drop Oceania and remove unused factor level
+gap_dropped <- gapminder %>% 
+  filter(continent != "Oceania") %>% 
+  droplevels()
+nlevels(gap_dropped$continent)
+levels(gap_dropped$continent)
+count(gap_dropped,continent)
+```
+It shows that levels for _continent_ dropped to 4, which are "Africa", "Americas", "Asia" and "Europe", and there're 624, 300, 396 and 360 observations associated with each level, respectively.
+
+### Reorder the levels of continent
+
+We then reorder the levels of continent in original gapminder dataset based on maximun GDP per capita observed in each continent. To compare the original and re-leveled factor, we first use arrange to explore the difference.
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  arrange(continent) %>% 
+  DT::datatable()
+
+gapminder %>% 
+  group_by(continent) %>% 
+  arrange(fct_reorder(continent, gdpPercap, max)) %>% 
+  DT::datatable()
+```
+
+As shown in the above two tables, the last continent shown in the table changed from Oceania to Asia. However, it's hard to check all the levels in the table, we then plot the original and reordered levels of continent with number of entries to see how the continents were ordered.
+
+```{r fig.height=5, fig.width=10}
+g1 <- ggplot(gapminder) +
+  geom_bar(aes(continent)) +
+  coord_flip()+
+  theme_bw() +
+  xlab("Continent") + ylab("Number of entries")
+
+g2 <- ggplot(gapminder) +
+  geom_bar(aes(fct_reorder(continent, gdpPercap, max))) +
+  coord_flip()+
+  theme_bw() +
+  xlab("Continent") + ylab("Number of entries") 
+
+plot_grid(g1, g2)
+```
+
+The original continents were ordered in an alphabetical manner, while after re-ordering, the order of Oceania, Americas and Asia changed.
+
+## Exercise 3 File input/output (I/O)
+
+We filter out all the observations for year 2007, and saved it as a .csv file _gapminder_2007.csv_.
+
+```{r}
+#filter gapminder dataset
+gapminder_2007 <- gapminder %>% 
+  filter(year == 2007) 
+#export .csv file
+write_csv(gapminder_2007, here::here("hw5.0","gapminder_2007.csv"))
+#import .csv file
+gapminder_2007_2 <- read_csv(here::here("hw5.0", "gapminder_2007.csv"))
+#exam the continent variable
+class(gapminder_2007_2$continent)
+```
+
+After re-imported data from .csv file, the class of continent changed from order to character, meaning that the newly created file lost the original factor info. We then need to manually order the continent, and re-arrange the table with the frenquencies of levels in the continent factor.
+
+```{r}
+gapminder_2007_2$continent <- factor(gapminder_2007_2$continent, levels = c("Africa", "Americas", "Asia", "Europe", "Oceania"))
+class(gapminder_2007_2$continent)
+gapminder_2007_2 %>% 
+  group_by(continent) %>% 
+  arrange(fct_infreq(continent)) %>% 
+  DT::datatable()
+```
+
+
+## Exercise 4 Visualization design
+
+Recreate the plot generated in hw2.0 about the relationship between Chinese population and GDP per capita from year 1952 to 2007. The re-generated plot has the following changes:
+
+1. Change the background from gray to white;
+
+2. Remove the gride to have a clear view;
+
+3. Change the color, size and symbol for data point;
+
+4. Add a line to connect the data points for a clearer trand of increase;
+
+5. Change the x-axis to log scale, and the format of number;
+
+6. Add units to axises;
+
+7. Set uniformed breaks for x-axis;
+
+8. Add title and caption.
+
+```{r fig.height=5, fig.width=10}
+gap_chn <- gapminder %>%
+  filter(country == "China")
+
+b1<- ggplot(gap_chn, aes(pop, gdpPercap)) +
+  geom_point(color = "black", fill = "Navy", shape = 22, alpha = 0.5, size = 6) +
+  scale_x_continuous ("Population", labels = scales::scientific_format(digits = 2, scale = 1)) +
+  scale_y_continuous ("GDP per capita", labels = scales::dollar_format())
+
+b2 <- ggplot(gap_chn, aes(pop, gdpPercap)) +
+  geom_point(shape = 19, size = 3) +
+  geom_line()+
+  theme_classic() +
+  labs (title = "Relationship between Chinese population and \n GDP per capita (1952-2007)",
+        caption = "Data source: Gapminder") +
+  scale_x_log10 ("Population", breaks = c(600000000, 800000000, 1000000000, 1200000000), labels = scales::comma_format()) +
+  scale_y_continuous ("GDP per capita (US$)", labels = scales::comma_format())
+
+plot_grid(b1, b2)
+```
+
+
+
+
+## Exercise 5 Writing figures to file
+The two plots generated in exercise 4 were saved to .png files.
+
+The [Origional Plot](https://stat545-ubc-hw-2019-20.github.io/stat545-hw-xlin-1/hw5.0/Original_plot.png) generated in hw2.0 and the [Reproduced Plot](https://stat545-ubc-hw-2019-20.github.io/stat545-hw-xlin-1/hw5.0/Reproduced_plot.png) can be check by clikcing the links.
+
+```{r}
+ggsave(plot = b1, here::here("hw5.0","Original_plot.png"))
+ggsave(plot = b2, here::here("hw5.0","Reproduced_plot.png"))
+```
